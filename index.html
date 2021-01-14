@@ -1,0 +1,13 @@
+{% extends "layout.html" %}
+
+<section>
+    <div class="container">
+        <div class="entry-list">
+            {% for entry in entries %}
+            <article>
+                <h2><a href="{{ url_for('detail') }}"> {{ entry.title }}</a></h2>
+                <time datetime="2016-01-31">January 31, 2016</time>
+            </article>
+        </div>
+    </div>
+</section>

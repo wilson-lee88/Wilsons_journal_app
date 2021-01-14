@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+{% from 'macros.html' import render_field %}
+<section>
+    <div class="container">
+        <div class="new-entry">
+            <h2>Register!</h2>
+            <form method="POST" action="" class="entry">
+                {{ form.hidden_tag() }}
+                {{  render_field(form.username) }}
+                {{  render_field(form.password) }}
+                <input type="submit" value="Create Account" class="button">
+                <a href="{{ url_for("login") }}" class="button button-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+</section>

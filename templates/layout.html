@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="eng">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>MyJournal</title>
+        <link href="https://fonts.googleapis.com/css?family=Cousine:400" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css?family=Work+Sans:600" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link rel="stylesheet" href="/static/normalize.css">
+        <link rel="stylesheet" href="/static/site.css">
+    </head>
+    <body>
+        <header>
+            <div class="container">
+                <div class="site-header">
+                    <a class="logo" href="{{ url_for('index', user_id=None) }}">My Journal</a>
+                    <a class="button icon-right" href="{{ url_for('new_user') }}">
+                        <span>Create New User</span><i class="material-icons">verified_user</i></a>
+                    {% if current_user.is_authenticated %}
+                        <a class="button icon_right" href="{{ url_for('index', user_id={{ current_user.id }}) }}">
+                            <span>My Post</span><i class="material-icons">book</i></a>
+                        <a class="button icon-right" href="{{ url_for('new_post') }}">
+                            <span>Create New Post</span> <i class="material-icons">add</i></a>
+                        <a class="button icon-right" href="{{ url_for('logout') }}">
+                            <span>Log Out</span><i class="material-icons">power_settings_new</i></a>
+                    {% endif %}
+                </div>
+            </div>
+        </header>
+        {% block content %}{% end block %}
+        <footer>
+            <div>
+                &copy; MyJournal
+            </div>
+        </footer>
+    </body>
+</html>

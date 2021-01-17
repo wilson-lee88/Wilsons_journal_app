@@ -83,8 +83,8 @@ class Tags(Model):
 
 
 class TagPostRel(Model):
-    from_entry = ForeignKeyField(Entries, rel_model=Entries, related_name='from entry')
-    to_tag = ForeignKeyField(Tags, rel_model=Tags, related_name='to tag')
+    from_entry = ForeignKeyField(Entries)
+    to_tag = ForeignKeyField(Tags)
 
     class Meta:
         database = db
@@ -106,6 +106,6 @@ class TagPostRel(Model):
 
 def initialize():
     db.connect()
-    db.create_tables([User, Entries, Tags, TagPostRel], safe=True)
+    db.create_tables([User, Entries, Tags], safe=True)
     db.close()
 

@@ -48,7 +48,7 @@ def register():
 @login_manager.user_loader
 def load_user(userid):
     try:
-        return models.User.get(models.User.user_id == userid)
+        return models.User.get(models.User.id == userid)
     except models.DoesNotExist:
         return None
 
@@ -73,7 +73,7 @@ def login():
 
 @app.route('/', methods=['GET'])
 @app.route('/<int:user_id>', methods=['GET'])
-def index(user_id):
+def index(user_id=None):
     if user_id:
         try:
             posts = models.Entries.select().where(
@@ -97,28 +97,28 @@ def listing(tag_id):
 @app.route('/entries/new', methods=['GET', 'POST'])
 @login_required
 def new_post():
-    form_data = forms.EntryForm()
-    if form_data.validate_on_submit():
+    form = forms.EntryForm()
+    if form.validate_on_submit():
         try:
             models.Entries.create_entry(
                 current_user.get_id(),
-                form_data.title.data.strip(),
-                form_data.date.data,
-                form_data.time_spent.data,
-                form_data.learned.data,
-                form_data.resources.data,
+                form.title.data.strip(),
+                form.date.data,
+                form.time_spent.data,
+                form.learned.data,
+                form.resources.data,
             )
         except ValueError:
             return redirect(url_for('exists'))
 
-        tags = form_data.tags.data.split(', ')
+        tags = form.tags.data.split(', ')
         exist_tags = []
         existing = models.Tags.select()
         for tag in tags:
             if tag not in existing.tag_name:
                 models.TagPostRel.create_rel(
                     models.Entries.get(models.Entries.title **
-                                       form_data.title.data,
+                                       form.title.data,
                                        models.Tags.get(models.Tags.tag_name **
                                                        tag))
                 )
@@ -126,12 +126,12 @@ def new_post():
                 models.Tags.create_tag(tag)
                 models.TagPostRel.create_rel(
                     models.Entries.get(models.Entries.title **
-                                       form_data.title.data,
+                                       form.title.data,
                                        models.Tags.get(models.Tags.tag_name **
                                                        tag))
                 )
         return redirect(url_for('index'))
-    return render_template('new.html', form=form_data)
+    return render_template('new.html', form=form)
 
 
 @app.route('/edit/<int:entry_id>', methods=['GET', 'POST'])
@@ -216,7 +216,7 @@ def not_found(error):
 
 if __name__ == '__main__':
     models.initialize()
-    app.run(debug=True, port=5000, host='0.0.0.0')
+    app.run(debug=True)
 '''
     models.Entries.get().where(
         models.Entries.title == "learned flask").delete_instance()
@@ -230,7 +230,7 @@ models.User.create(
     )
 
 models.Entries.create(
-        user_id=models.User.get().where(models.User.user_name == "wilsonlee"),
+        user_id=1,
         title="learned flask",
         time_spent="6",
         learned="how to make a web app",

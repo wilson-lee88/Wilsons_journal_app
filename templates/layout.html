@@ -15,11 +15,13 @@
             <div class="container">
                 <div class="site-header">
                     <a class="logo" href="{{ url_for('index', user_id=None) }}">My Journal</a>
-                    <a class="button icon-right" href="{{ url_for('new_user') }}">
+                    <a class="button icon-right" href="{{ url_for('register') }}">
                         <span>Create New User</span><i class="material-icons">verified_user</i></a>
+                    <a class="button icon-right" href="{{ url_for('login') }}">
+                        <span>Log in</span><i class="material-icons">assignment_ind</i></a>
                     {% if current_user.is_authenticated %}
-                        <a class="button icon_right" href="{{ url_for('index', user_id={{ current_user.id }}) }}">
-                            <span>My Post</span><i class="material-icons">book</i></a>
+                        <a class="button icon_right" href="{{ url_for('index') }}">
+                            <span>Posts</span><i class="material-icons">book</i></a>
                         <a class="button icon-right" href="{{ url_for('new_post') }}">
                             <span>Create New Post</span> <i class="material-icons">add</i></a>
                         <a class="button icon-right" href="{{ url_for('logout') }}">
@@ -28,7 +30,7 @@
                 </div>
             </div>
         </header>
-        {% block content %}{% end block %}
+        {% block content %}{% endblock %}
         <footer>
             <div>
                 &copy; MyJournal

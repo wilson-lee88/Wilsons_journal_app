@@ -1,7 +1,7 @@
 from flask_wtf import Form
-from wtforms import StringField, PasswordField, DateTimeField
+from wtforms import StringField, PasswordField
 from wtforms.validators import (DataRequired, Regexp, ValidationError,
-                                Length, equal_to, optional)
+                                Length, equal_to)
 from peewee import *
 
 from models import User

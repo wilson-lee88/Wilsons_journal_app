@@ -89,8 +89,7 @@ class TagPostRel(Model):
     class Meta:
         database = db
         indexes = (
-            (('from_entry', 'to_tag'), True)
-        )
+            (('from_entry', 'to_tag'), True),)
 
     @classmethod
     def create_rel(cls, from_entry, to_tag):
@@ -106,6 +105,6 @@ class TagPostRel(Model):
 
 def initialize():
     db.connect()
-    db.create_tables([User, Entries, Tags], safe=True)
+    db.create_tables([User, Entries, Tags, TagPostRel], safe=True)
     db.close()
 

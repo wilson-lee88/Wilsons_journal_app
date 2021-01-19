@@ -14,7 +14,7 @@
         <header>
             <div class="container">
                 <div class="site-header">
-                    <a class="logo" href="{{ url_for('index', user_id=None) }}">My Journal</a>
+                    <a class="logo" href="{{ url_for('index', user_id=None) }}"><i>My Journal</i></a>
                     <a class="button icon-right" href="{{ url_for('register') }}">
                         <span>Create New User</span><i class="material-icons">verified_user</i></a>
                     <a class="button icon-right" href="{{ url_for('login') }}">
@@ -30,6 +30,13 @@
                 </div>
             </div>
         </header>
+        {%  with messages = get_flashed_messages(with_categories=True) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
         {% block content %}{% endblock %}
         <footer>
             <div>

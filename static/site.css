@@ -232,6 +232,14 @@ input[type=submit] {
   margin-bottom: 15px;
 }
 
+.success {
+  padding: 20px;
+  background-color: #55c613; /* Red */
+  color: white;
+  margin-bottom: 15px;
+}
+
+
 
 
 

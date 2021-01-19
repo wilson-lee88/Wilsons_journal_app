@@ -9,6 +9,7 @@ from flask_login import (current_user, LoginManager, login_required,
 
 from flask_bcrypt import check_password_hash
 
+
 app = Flask(__name__, template_folder='templates')
 app.secret_key = '249889fy231fe8fyw3e8h$%#$g=+"::'
 
@@ -22,7 +23,7 @@ def before_request():
     """"connect to the database before each request"""
     g.db = models.db
     g.db.connect()
-    g.user = current_user
+    g.user = current_user.get_id()
 
 
 @app.after_request
@@ -60,19 +61,19 @@ def login():
         try:
             user = models.User.get(models.User.user_name == form.username.data)
         except models.DoesNotExist:
-            flash('Your email or password does not exist')
+            flash('Your email or password does not exist', 'alert')
         else:
             if check_password_hash(user.password, form.password.data):
                 login_user(user)
                 flash("You've been logged in", 'success')
                 return redirect(url_for('index'))
             else:
-                flash('Your email or password does not exist')
+                flash('Your email or password does not exist', 'alert')
     return render_template('login.html', form=form)
 
 
 @app.route('/', methods=['GET'])
-@app.route('/<int:user_id>', methods=['GET'])
+@app.route('/<int:user_id>', methods=('GET', 'POST'))
 def index(user_id=None):
     if user_id:
         try:
@@ -88,41 +89,38 @@ def index(user_id=None):
         return render_template('index.html', user_posts=posts)
 
 
-@app.route('/tag/<int:tag_id>', methods=['GET'])
+@app.route('/tag/<int:tag_id>', methods=('GET', 'POST'))
 @login_required
 def listing(tag_id):
     tags = models.Tags.select().where(models.Tags.id == tag_id)
 
 
-@app.route('/entries/new', methods=['GET', 'POST'])
+@app.route('/new', methods=('GET', 'POST'))
 @login_required
 def new_post():
     form = forms.EntryForm()
     if form.validate_on_submit():
         try:
             models.Entries.create_entry(
-                current_user.get_id(),
-                form.title.data.strip(),
-                form.date.data,
-                form.time_spent.data,
-                form.learned.data,
-                form.resources.data,
+                user_id=current_user.id,
+                title=form.title.data.strip(),
+                date=form.date.data,
+                time_spent=form.time_spent.data,
+                learned=form.learned.data,
+                resources=form.resources.data,
             )
         except ValueError:
-            return redirect(url_for('exists'))
+            return redirect(url_for('new_post'))
 
         tags = form.tags.data.split(', ')
-        exist_tags = []
         existing = models.Tags.select()
+        exist_tags = []
+
+        for tag in existing:
+            exist_tags.append(tag.tag_name)
+
         for tag in tags:
-            if tag not in existing.tag_name:
-                models.TagPostRel.create_rel(
-                    models.Entries.get(models.Entries.title **
-                                       form.title.data,
-                                       models.Tags.get(models.Tags.tag_name **
-                                                       tag))
-                )
-            else:
+            if tag not in exist_tags:
                 models.Tags.create_tag(tag)
                 models.TagPostRel.create_rel(
                     models.Entries.get(models.Entries.title **
@@ -130,11 +128,21 @@ def new_post():
                                        models.Tags.get(models.Tags.tag_name **
                                                        tag))
                 )
+            else:
+                models.TagPostRel.create_rel(
+                    models.Entries.get(models.Entries.title **
+                                       form.title.data,
+                                       models.Tags.get(models.Tags.tag_name **
+                                                       tag))
+                )
+        flash('Entry is entered', 'success')
         return redirect(url_for('index'))
+    else:
+        pass
     return render_template('new.html', form=form)
 
 
-@app.route('/edit/<int:entry_id>', methods=['GET', 'POST'])
+@app.route('/edit/<int:entry_id>', methods=('GET', 'POST'))
 @login_required
 def edit(entry_id):
     try:
@@ -205,7 +213,7 @@ def not_found(error):
 @login_required
 def logout():
     logout_user()
-    flash("You've been logged out!", "success")
+    flash("You've been logged out!", 'success')
     return redirect(url_for('index'))
 
 
@@ -217,23 +225,4 @@ def not_found(error):
 if __name__ == '__main__':
     models.initialize()
     app.run(debug=True)
-'''
-    models.Entries.get().where(
-        models.Entries.title == "learned flask").delete_instance()
 
-    models.User.get().where(
-        models.User.user_name == "wilsonlee").delete_instance()
-'''
-models.User.create(
-        user_name="wilsonlee",
-        password="123456"
-    )
-
-models.Entries.create(
-        user_id=1,
-        title="learned flask",
-        time_spent="6",
-        learned="how to make a web app",
-        resources="Treehouse and stack overflow",
-        tags="career, programming, life "
-    )

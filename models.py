@@ -26,7 +26,7 @@ class User(UserMixin, Model):
 class Entries(Model):
     user_id = ForeignKeyField(User, related_name='user', rel_model=User)
     title = CharField(unique=True)
-    date = DateTimeField(default=datetime.datetime.now, formats='%m-%d-%Y')
+    date = DateTimeField(default=datetime.datetime.now, formats='%Y-%m-%d')
     time_spent = IntegerField()
     learned = TextField()
     resources = TextField()
@@ -36,11 +36,10 @@ class Entries(Model):
         order_by = ('-date',)
 
     @classmethod
-    def create_entry(cls, user_id, title, date, time_spent, learned, resources):
+    def create_entry(cls, title, date, time_spent, learned, resources):
         try:
             with db.transaction():
                 cls.create(
-                    user_id=user_id,
                     title=title,
                     date=date,
                     time_spent=time_spent,

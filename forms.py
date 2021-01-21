@@ -1,10 +1,9 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField
+from wtforms import (StringField, PasswordField, DateTimeField,
+                     IntegerField)
 from wtforms.validators import (DataRequired, Regexp, ValidationError,
                                 Length, equal_to)
 from datetime import datetime
-
-from peewee import *
 
 from models import User
 
@@ -44,23 +43,16 @@ class LoginForm(FlaskForm):
 
 
 class EntryForm(FlaskForm):
-    title = StringField('Title:',
-                        validators=[DataRequired()])
+    title = StringField('Title:')
 
     date = DateTimeField("Date (format: YYYY-MM-DD):",
-                         format('%Y-%m-%d'))
+                         format='%Y-%m-%d')
 
-    time_spent = TextField('Time spent studying in hours:',
-                           )
+    time_spent = StringField('Time spent studying in hours:')
 
-    learned = TextField('What did you learn?',
-                        )
+    learned = StringField('What did you learn?')
 
-    resources = TextField('What did you user as a resource?',
-                          )
+    resources = StringField('What did you user as a resource?')
 
     tags = StringField('Enter tags (comma separated eg. tag1, tag2, tag3): ',
-                       validators=[DataRequired(),
-                                   Regexp('^[a-z]+(,[a-z]+)*$',
-                                          message='Like this: tag1, tag2, tag3')
-                                   ])
+                       validators=[DataRequired()])

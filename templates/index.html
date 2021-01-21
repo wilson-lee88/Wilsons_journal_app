@@ -7,11 +7,11 @@
             {% for entry in entries %}
             <article>
                 <h2><a href="{{ url_for('detail') }}"> {{ entry.title }}</a></h2>
-                <time datetime="{{  entry.date.strftime('%Y-%m-%d') }}">
+                <time datetime="YYYY-MM-DD">
                     {{ entry.date.strftime('%Y-%m-d') }}</time><br>
             </article>
+            {% endfor %}
         </div>
     </div>
 </section>
-{% endfor %}
 {% endblock %}

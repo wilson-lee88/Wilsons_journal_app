@@ -1,7 +1,7 @@
 import forms
 import models
 
-from flask import (abort, Flask, flash, g, render_template, redirect,
+from flask import (Flask, flash, g, render_template, redirect,
                    url_for)
 
 from flask_login import (current_user, LoginManager, login_required,
@@ -72,21 +72,11 @@ def login():
     return render_template('login.html', form=form)
 
 
-@app.route('/', methods=['GET'])
-@app.route('/<int:user_id>', methods=('GET', 'POST'))
-def index(user_id=None):
-    if user_id:
-        try:
-            posts = models.Entries.select().where(
-                models.Entries.id == user_id).limit(25).order_by(
-                models.Entries.date.desc())
-            return render_template('index.html', user_posts=posts)
-        except models.DoesNotExist:
-            abort(404)
-    else:
-        posts = models.Entries.select().limit(25).order_by(
-            models.Entries.date.desc())
-        return render_template('index.html', user_posts=posts)
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    posts = models.Entries.select().limit(25).order_by(
+        models.Entries.date.desc())
+    return render_template('index.html', user_posts=posts)
 
 
 @app.route('/tag/<int:tag_id>', methods=('GET', 'POST'))
@@ -102,12 +92,11 @@ def new_post():
     if form.validate_on_submit():
         try:
             models.Entries.create_entry(
-                user_id=current_user.id,
-                title=form.title.data.strip(),
-                date=form.date.data,
-                time_spent=form.time_spent.data,
-                learned=form.learned.data,
-                resources=form.resources.data,
+                form.title.data.strip(),
+                form.date.data,
+                form.time_spent.data,
+                form.learned.data,
+                form.resources.data,
             )
         except ValueError:
             return redirect(url_for('new_post'))
@@ -137,8 +126,7 @@ def new_post():
                 )
         flash('Entry is entered', 'success')
         return redirect(url_for('index'))
-    else:
-        pass
+
     return render_template('new.html', form=form)
 
 
@@ -157,42 +145,38 @@ def edit(entry_id):
     form = forms.EntryForm()
 
     if form.validate_on_submit():
-        if entry.user_id == current_user.id:
-            form.title.data = entry.title
-            form.date.data = entry.date
-            form.time_spent = entry.time_spent
-            form.learned = entry.learned
-            form.resources = entry.resources
-            new_tags = form.tags.split(', ')
+        form.title.data = entry.title
+        form.date.data = entry.date
+        form.time_spent = entry.time_spent
+        form.learned = entry.learned
+        form.resources = entry.resources
+        new_tags = form.tags.split(', ')
 
-            for tag in cur_tag:
-                if tag not in new_tags:
-                    models.TagPostRel.get(
-                        from_entry=entry.id,
-                        to_tag=models.Tags.get().where(models.Tags.tag_name == tag)
-                    ).delete_instance()
+        for tag in cur_tag:
+            if tag not in new_tags:
+                models.TagPostRel.get(
+                    from_entry=entry.id,
+                    to_tag=models.Tags.get().where(models.Tags.tag_name == tag)
+                ).delete_instance()
 
-            for tag in new_tags:
-                if tag not in cur_tag:
-                    try:
-                        models.Tags.create_tag(
-                            tag_name=tag
+        for tag in new_tags:
+            if tag not in cur_tag:
+                try:
+                    models.Tags.create_tag(
+                        tag_name=tag
+                    )
+                except models.IntegrityError:
+                    pass
+                try:
+                    models.TagPostRel.create_rel(
+                        entry.id,
+                        models.Tags.get().where(
+                            models.Tags.tag_name == tag
                         )
-                    except models.IntegrityError:
-                        pass
-                    try:
-                        models.TagPostRel.create_rel(
-                            entry.id,
-                            models.Tags.get().where(
-                                models.Tags.tag_name == tag
-                            )
-                        )
-                    except models.IntegrityError:
-                        pass
-
-            return redirect(url_for('index'))
-        else:
-            return redirect(url_for('login'))
+                    )
+                except models.IntegrityError:
+                    pass
+                return redirect(url_for('index'))
 
     return render_template('edit.html', entry=entry, form=form)
 

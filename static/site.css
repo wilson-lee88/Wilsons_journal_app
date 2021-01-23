@@ -15,14 +15,14 @@ body {
 	padding: 0 25px;
 }
 header .site-header {
-	mwrgin: 0 auto;
+	margin: 25px ;
 	height: 95px;
 }
 header .logo i {
 	color: #678f89;
 	margin: 20px 0 0 -5px;
-	float: left;
-	font-size: 40px;
+	float: right;
+	font-size: 80px;
 }
 header .button {
 	float: right;

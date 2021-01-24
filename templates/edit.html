@@ -13,6 +13,7 @@
                 {{ render_edit_field(form.time_spent, entry.time_spent) }}
                 {{ render_edit_field(form.learned, entry.learned) }}
                 {{ render_edit_field(form.resources, entry.resources) }}
+                {{ render_edit_field(form.tags, ' '.join(string)) }}
                 <input type="submit" value="Publish Entry" class="button">
                 <a href="{{ url_for("index") }}" class="button button-secondary">Cancel</a>
             </form>

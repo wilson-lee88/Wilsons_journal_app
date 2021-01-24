@@ -4,6 +4,37 @@ from wtforms import (StringField, PasswordField, DateField,
 from wtforms.validators import (DataRequired, Regexp, ValidationError,
                                 Length, equal_to)
 
+from models import User
+
+
+def name_exists(form, field):
+    if User.select().where(User.user_name == field.data).exists():
+        raise ValidationError('User with that name already exists.')
+
+
+class RegisterForm(FlaskForm):
+    username = StringField(
+        'Username',
+        validators=[
+            DataRequired(),
+            Regexp(
+                r'^[a-zA-Z0-9_]+$',
+                message=('Username should be one word, letters,'
+                         'numbers, and underscores only.')
+            ),
+            name_exists
+        ])
+    password = PasswordField(
+        'Password',
+        validators=[
+            DataRequired(),
+            Length(min=2),
+            equal_to('password2', message='Passwords must match')
+        ])
+    password2 = PasswordField(
+        'Confirm Password',
+        validators=[DataRequired()])
+
 
 class EntryForm(FlaskForm):
     title = StringField('Title:',
@@ -21,6 +52,13 @@ class EntryForm(FlaskForm):
     resources = TextAreaField('What did you user as a resource?',
                               validators=[DataRequired()])
 
-    tags = TextAreaField('Tags (comma separated, like this: tag1, tag2, tag3',
-                         validators=[DataRequired()])
+    tags = TextAreaField('Tags (letters and numbers only, space separated, like this: tag1 tag2 tag3)',
+                         validators=[DataRequired(),
+                                     Regexp("^[a-zA-Z0-9_ ]+$",
+                                     message="letters and numbers only, space separated!")]
+                         )
 
+
+class LoginForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired()])

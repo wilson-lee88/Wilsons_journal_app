@@ -6,14 +6,14 @@
     <div class="container">
         <div class="edit-entry">
             <h2>Edit Entry</h2>
-            <form>
+            <form  method="POST" action="" class="entry">
                 {{ form.hidden_tag() }}
                 {{ render_edit_field(form.title, entry.title) }}
                 {{ render_edit_field(form.date, entry.date) }}
                 {{ render_edit_field(form.time_spent, entry.time_spent) }}
                 {{ render_edit_field(form.learned, entry.learned) }}
-                {{ render_edit_field(form.resources, entry.resesources) }}
-                {{ render_edit_field(form.tags, entry.get_tags().tag_name) }}
+                {{ render_edit_field(form.resources, entry.resources) }}
+                {{ render_edit_field(form.tags, ' '.join(string)) }}
                 <input type="submit" value="Publish Entry" class="button">
                 <a href="{{ url_for("index") }}" class="button button-secondary">Cancel</a>
             </form>

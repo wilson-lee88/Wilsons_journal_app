@@ -3,35 +3,30 @@
 {%  block content %}
 <section>
     <div class="container">
-        <div class="entries-list single">
+        <div class="entry-list">
             <article>
-                <h1>{{  entries.title }}</h1>
-                <time>{{  entries.date }}</time>
-                <div class="entries">
-                    <h3>Time Spent: </h3>
-                    <p>{{  entries.time_spent }}</p>
-                </div>
-                <div class="entries">
-                    <h3>What I Learned:</h3>
-                    <p>{{ entries.learned }}</p>
-
-                </div>
-                <div class="entries">
-                    <h3>Resources to Remember:</h3>
-                    <p>{{ entries.resources }}</p>
-                </div>
-                <div class="entries">
-                    <h3>Tags:</h3>
-                    {% for tags in entries.get_tags() %}
-                    <a href="{{ url_for('listing'), tag=tags.id }}"></a><p>{{ tags.tag_name }} </p>
-                    {%  endfor %}
-                </div>
+            <h3>Title:</h3>
+            {{ entries.title }}
+            <h3>Date:</h3>
+            {{  entries.date }}
+            <h3>Time Spent:</h3>
+            {{  entries.time_spent }}
+            <h3>What I Learned:</h3>
+            {{ entries.learned }}
+            <h3>Resources to Remember:</h3>
+            {{ entries.resources }}
+            <h3>Tags:</h3>
+            {% for tag in tags %}
+                <a href="{{ url_for('index', tag_id=tag.id) }}">
+                    {{ tag.tag_name }}</a>
+            {% endfor %}
+            <br><br><br>
+            <a href="{{ url_for("edit", entry_id=entries.id) }}"
+               class="button button-secondary">Edit Post</a><br><br>
+            <a href="{{ url_for("delete", entry_id=entries.id) }}"
+               class="button button-secondary">Delete Post</a>
             </article>
         </div>
-    </div>
-    <div class="edit">
-        <a class="button icon-right" href="{{ url_for('edit', entries_id=entries.id) }}">
-            <span>Edit Post</span><i class="material-icons">edit</i></a>
     </div>
 </section>
 {% endblock %}

@@ -1,4 +1,5 @@
 import datetime
+
 from flask_bcrypt import generate_password_hash
 from flask_login import UserMixin, current_user
 from peewee import *
@@ -24,86 +25,68 @@ class User(UserMixin, Model):
 
 
 class Entries(Model):
-    user_id = ForeignKeyField(User, related_name='user', rel_model=User)
-    title = CharField(unique=True)
+    id = AutoField()
+    user_id = ForeignKeyField(User)
+    title = CharField()
     date = DateTimeField(default=datetime.datetime.now, formats='%Y-%m-%d')
     time_spent = IntegerField()
-    learned = TextField()
-    resources = TextField()
+    learned = CharField()
+    resources = CharField()
 
     class Meta:
         database = db
         order_by = ('-date',)
 
     @classmethod
-    def create_entry(cls, title, date, time_spent, learned, resources):
-        try:
-            with db.transaction():
-                cls.create(
-                    title=title,
-                    date=date,
-                    time_spent=time_spent,
-                    learned=learned,
-                    resources=resources
-                )
-        except IntegrityError:
-            raise ValueError('This post already exists!')
+    def create_entry(cls, user_id, title, date, time_spent, learned, resources):
+        cls.create(
+            user_id=user_id,
+            title=title,
+            date=date,
+            time_spent=time_spent,
+            learned=learned,
+            resources=resources
+        )
 
-    def get_user_posts(self):
-        return Entries.select().where(Entries.user_id == self)
-
-    def get_tags(self):
+    def tags(self):
         return Tags.select().join(
-            on=TagPostRel.to_tag
-        ).where(TagPostRel.from_entry == self)
+            TagEntryRel,
+            on=TagEntryRel.to_tag).where(
+            TagEntryRel.from_entry == self
+        )
 
 
 class Tags(Model):
-    tag_name = CharField(unique=True)
+    tag_name = CharField()
 
     class Meta:
         database = db
+        order_by = ('-date',)
 
     @classmethod
     def create_tag(cls, tag_name):
-        with db.transaction():
-            try:
-                cls.create(
-                    tag=tag_name
-                )
-            except IntegrityError:
-                raise ValueError('this tag already exists')
-
-    def get_entries(self):
-        return Entries.select().join(
-            TagPostRel,
-            on=TagPostRel.from_entry).where(
-            TagPostRel.to_tag == self)
+        cls.create(
+            tag_name=tag_name
+        )
 
 
-class TagPostRel(Model):
+class TagEntryRel(Model):
     from_entry = ForeignKeyField(Entries)
     to_tag = ForeignKeyField(Tags)
 
     class Meta:
         database = db
-        indexes = (
-            (('from_entry', 'to_tag'), True),)
 
     @classmethod
-    def create_rel(cls, from_entry, to_tag):
-        try:
-            with db.transaction():
-                cls.create(
-                    from_entry=from_entry,
-                    to_tag=to_tag
-                )
-        except IntegrityError:
-            raise ValueError('relationship already exists')
+    def create_rel(cls, entry, tag):
+        cls.create(
+            from_entry=entry,
+            to_tag=tag
+        )
 
 
 def initialize():
     db.connect()
-    db.create_tables([User, Entries, Tags, TagPostRel], safe=True)
+    db.create_tables([User, Entries, Tags, TagEntryRel], safe=True)
     db.close()
 

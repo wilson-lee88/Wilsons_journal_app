@@ -14,16 +14,18 @@
         <header>
             <div class="container">
                 <div class="site-header">
-                    <a class="logo" href="{{ url_for('index') }}"><i>My Journal</i></a>
-                    <a class="button icon-right" href="{{ url_for('register') }}">
+                    <a class="logo" href="{{ url_for('index') }}"><h2>Wilson's Journal</h2></a>
+                </div>
+                <a class="button icon-right" href="{{ url_for('register') }}">
                         <span>Create New User</span><i class="material-icons">verified_user</i></a>
                     <a class="button icon-right" href="{{ url_for('login') }}">
                         <span>Log in</span><i class="material-icons">assignment_ind</i></a>
+                    <div class="icon-right">
                     {% if current_user.is_authenticated %}
                         <a class="button icon_right" href="{{ url_for('index') }}">
-                            <span>Posts</span><i class="material-icons">book</i></a>
+                        <span>Posts</span><i class="material-icons">airplay</i></a><br>
                         <a class="button icon-right" href="{{ url_for('new_post') }}">
-                            <span>Create New Post</span> <i class="material-icons">add</i></a>
+                            <span>Create New Post</span><i class="material-icons">add</i></a>
                         <a class="button icon-right" href="{{ url_for('logout') }}">
                             <span>Log Out</span><i class="material-icons">power_settings_new</i></a>
                     {% endif %}

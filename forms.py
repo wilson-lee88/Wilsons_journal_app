@@ -1,9 +1,8 @@
 from flask_wtf import FlaskForm
-from wtforms import (StringField, PasswordField, DateTimeField,
-                     IntegerField)
+from wtforms import (StringField, PasswordField, DateField,
+                     IntegerField, TextAreaField)
 from wtforms.validators import (DataRequired, Regexp, ValidationError,
                                 Length, equal_to)
-from datetime import datetime
 
 from models import User
 
@@ -37,22 +36,29 @@ class RegisterForm(FlaskForm):
         validators=[DataRequired()])
 
 
+class EntryForm(FlaskForm):
+    title = StringField('Title:',
+                        validators=[DataRequired()])
+
+    date = DateField("Date (format: YYYY-MM-DD):",
+                     format='%Y-%m-%d')
+
+    time_spent = IntegerField('Time spent studying in hours:',
+                              validators=[DataRequired()])
+
+    learned = TextAreaField('What did you learn?',
+                            validators=[DataRequired()])
+
+    resources = TextAreaField('What did you user as a resource?',
+                              validators=[DataRequired()])
+
+    tags = TextAreaField('Tags (letters and numbers only, space separated, like this: tag1 tag2 tag3)',
+                         validators=[DataRequired(),
+                                     Regexp("^[a-zA-Z0-9_ ]+$",
+                                     message="letters and numbers only, space separated!")]
+                         )
+
+
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
-
-
-class EntryForm(FlaskForm):
-    title = StringField('Title:')
-
-    date = DateTimeField("Date (format: YYYY-MM-DD):",
-                         format='%Y-%m-%d')
-
-    time_spent = StringField('Time spent studying in hours:')
-
-    learned = StringField('What did you learn?')
-
-    resources = StringField('What did you user as a resource?')
-
-    tags = StringField('Enter tags (comma separated eg. tag1, tag2, tag3): ',
-                       validators=[DataRequired()])

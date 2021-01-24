@@ -227,4 +227,14 @@ def not_found(error):
 
 if __name__ == '__main__':
     models.initialize()
+
+    models.Entries.create_entry(
+        user_id=1,
+        title="first entry",
+        date="2021-01-23",
+        time_spent=1,
+        learned="Python",
+        resources="Treehouse"
+    )
+
     app.run(debug=True)
